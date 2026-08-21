@@ -1,0 +1,4 @@
+import { PropertyCard } from "@/components/property-card"
+import { getProperties } from "@/lib/properties"
+const names:Record<string,string>={"golden-mile":"Golden Mile","nueva-andalucia":"Nueva Andalucía",benahavis:"Benahavís"}
+export default async function Area({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const {items}=await getProperties();const name=names[slug]||slug.replaceAll("-"," ");const filtered=items.filter(p=>p.areaSlug===slug);return <><header className="page-hero"><p className="eyebrow">Area guide</p><h1>{name}</h1><p>A concise guide to the lifestyle, landscape, and property character of {name}.</p></header><section className="section"><h2>Life in {name}</h2><p>Explore the area in person before making a property decision. Our advisors combine practical details with first-hand local context.</p><div className="property-grid">{filtered.map(p=><PropertyCard key={p.id} property={p}/>)}</div></section></>}

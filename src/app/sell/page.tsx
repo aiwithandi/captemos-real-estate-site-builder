@@ -1,0 +1,2 @@
+import Link from "next/link"
+export default function Sell(){return <article className="content-page"><p className="eyebrow">Private representation</p><h1>Sell with clarity.</h1><p>Thoughtful positioning, selective exposure, and direct advice from valuation through completion.</p><h2>Our approach</h2><ol><li>Evidence-led valuation and positioning.</li><li>Editorial presentation and qualified distribution.</li><li>Clear feedback, negotiation, and transaction support.</li></ol><Link className="button" href="/contact">Request a valuation</Link></article>}

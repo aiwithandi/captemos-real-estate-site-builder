@@ -1,0 +1,3 @@
+import Link from "next/link"
+const posts=[{slug:"choosing-the-right-area",title:"How to choose the right area",summary:"A practical framework for comparing lifestyle, access, and property character."},{slug:"buying-with-confidence",title:"Buying with confidence",summary:"The questions that clarify a premium property decision."}]
+export default function Journal(){return <article className="content-page"><p className="eyebrow">Journal</p><h1>Local perspective.</h1><div className="area-grid">{posts.map(p=><Link href={`/journal/${p.slug}`} key={p.slug}><p className="eyebrow">Guide</p><h2>{p.title}</h2><p>{p.summary}</p></Link>)}</div></article>}

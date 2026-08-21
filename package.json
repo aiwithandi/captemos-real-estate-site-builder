@@ -1,0 +1,38 @@
+{
+  "name": "captemos-real-estate-site-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A premium real-estate website starter and Codex skill with CapteMos and Supabase integrations.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiwithandi/captemos-real-estate-site-builder.git"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck",
+    "seed:demo": "node scripts/seed-demo.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
+    "lucide-react": "^0.468.0",
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.9",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.1",
+    "tailwindcss": "^4.1.9",
+    "typescript": "^5"
+  }
+}

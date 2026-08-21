@@ -1,0 +1,3 @@
+import Link from "next/link"
+const areas=[{slug:"golden-mile",name:"Golden Mile",note:"Beachside landmarks and established prestige."},{slug:"nueva-andalucia",name:"Nueva Andalucía",note:"Golf, family life, and year-round energy."},{slug:"benahavis",name:"Benahavís",note:"Privacy, mountain views, and contemporary villas."}]
+export default function Areas(){return <article className="content-page"><p className="eyebrow">Local intelligence</p><h1>Find your place.</h1><p>The right home begins with the right rhythm of life.</p><div className="area-grid">{areas.map(a=><Link key={a.slug} href={`/areas/${a.slug}`}><p className="eyebrow">Marbella</p><h2>{a.name}</h2><p>{a.note}</p></Link>)}</div></article>}

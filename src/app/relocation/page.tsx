@@ -1,0 +1,2 @@
+import Link from "next/link"
+export default function Relocation(){return <article className="content-page"><p className="eyebrow">Relocation</p><h1>Move well.</h1><p>A home search connected to schools, neighborhoods, legal coordination, and the realities of daily life.</p><h2>One considered brief</h2><p>We begin with how you want to live, then translate that into areas, homes, and a practical arrival plan.</p><Link className="button" href="/matchmaker">Create my brief</Link></article>}
