@@ -1,0 +1,63 @@
+name: Vercel deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Pull preview configuration
+        run: npx --yes vercel@50.42.0 pull --yes --environment=preview --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Build preview
+        run: npx --yes vercel@50.42.0 build --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Deploy preview
+        run: npx --yes vercel@50.42.0 deploy --prebuilt --token="${{ secrets.VERCEL_TOKEN }}"
+
+  production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Pull production configuration
+        run: npx --yes vercel@50.42.0 pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Build production
+        run: npx --yes vercel@50.42.0 build --prod --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Deploy production
+        run: npx --yes vercel@50.42.0 deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}"

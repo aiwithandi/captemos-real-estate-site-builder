@@ -8,6 +8,14 @@ function text(row: UnknownRow, ...keys: string[]) {
   return ""
 }
 
+function identifier(row: UnknownRow, ...keys: string[]) {
+  for (const key of keys) {
+    const value = row[key]
+    if ((typeof value === "string" || typeof value === "number") && String(value).trim()) return String(value)
+  }
+  return ""
+}
+
 function number(row: UnknownRow, ...keys: string[]) {
   for (const key of keys) {
     const value = Number(row[key])
@@ -17,7 +25,7 @@ function number(row: UnknownRow, ...keys: string[]) {
 }
 
 function normalize(row: UnknownRow): Property | null {
-  const id = text(row, "id", "property_code")
+  const id = identifier(row, "id", "property_code")
   const title = text(row, "title", "name")
   if (!id || !title) return null
   const rawImages = Array.isArray(row.gallery_images) ? row.gallery_images : Array.isArray(row.images) ? row.images : []
@@ -55,6 +63,7 @@ export async function getProperties(): Promise<{ items: Property[]; source: Feed
       const response = await fetch(`${baseUrl.replace(/\/$/, "")}/api/properties/list`, {
         headers: { Authorization: `Bearer ${apiKey}` },
         cache: "no-store",
+        signal: AbortSignal.timeout(8_000),
       })
       if (response.ok) {
         const payload = await response.json() as { items?: UnknownRow[] }
@@ -69,8 +78,4 @@ export async function getProperties(): Promise<{ items: Property[]; source: Feed
 export async function getProperty(slug: string) {
   const feed = await getProperties()
   return { item: feed.items.find((property) => property.slug === slug) ?? null, source: feed.source }
-}
-
-export function formatPrice(property: Property) {
-  return `${new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(property.price)}${property.priceSuffix || ""}`
 }

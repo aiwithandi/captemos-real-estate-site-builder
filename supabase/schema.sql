@@ -55,8 +55,24 @@ alter table public.inquiries enable row level security;
 alter table public.matchmaker_submissions enable row level security;
 alter table public.property_cache enable row level security;
 
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select on public.site_profiles to anon, authenticated;
+grant insert, update, delete on public.site_profiles to authenticated;
+grant all on public.site_profiles to service_role;
+
+grant select, update on public.inquiries to authenticated;
+grant select, insert, update on public.inquiries to service_role;
+
+grant select on public.matchmaker_submissions to authenticated;
+grant select, insert on public.matchmaker_submissions to service_role;
+
+grant select on public.property_cache to anon, authenticated;
+grant insert, update, delete on public.property_cache to authenticated;
+grant all on public.property_cache to service_role;
+
 drop policy if exists "public reads published profile" on public.site_profiles;
-create policy "public reads published profile" on public.site_profiles for select using (published = true);
+create policy "public reads published profile" on public.site_profiles for select to anon, authenticated using (published = true);
 drop policy if exists "owner manages profile" on public.site_profiles;
 create policy "owner manages profile" on public.site_profiles for all to authenticated using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
 
@@ -69,7 +85,7 @@ drop policy if exists "owner reads matchmaker submissions" on public.matchmaker_
 create policy "owner reads matchmaker submissions" on public.matchmaker_submissions for select to authenticated using (auth.uid() = owner_id);
 
 drop policy if exists "public reads published properties" on public.property_cache;
-create policy "public reads published properties" on public.property_cache for select using (published = true);
+create policy "public reads published properties" on public.property_cache for select to anon, authenticated using (published = true);
 drop policy if exists "owner manages property cache" on public.property_cache;
 create policy "owner manages property cache" on public.property_cache for all to authenticated using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
 
