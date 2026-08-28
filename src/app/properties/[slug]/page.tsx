@@ -5,13 +5,10 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowRight, Bath, BedDouble, Check, MapPin, Maximize2 } from "lucide-react"
 import { FavoriteButton } from "@/components/favorite-button"
 import { InquiryForm } from "@/components/inquiry-form"
-import { getProperties, getProperty } from "@/lib/properties"
+import { getProperty } from "@/lib/properties"
 import { bypassImageOptimization, formatPrice } from "@/lib/property-format"
 
-export async function generateStaticParams() {
-  const { items } = await getProperties()
-  return items.map(({ slug }) => ({ slug }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { item } = await getProperty((await params).slug)
