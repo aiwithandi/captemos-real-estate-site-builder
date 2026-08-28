@@ -1,11 +1,50 @@
 import type { Metadata } from "next"
+import Link from "next/link"
+import { ArrowRight, SlidersHorizontal } from "lucide-react"
+import { CatalogueFilters } from "@/components/catalogue-filters"
 import { PropertyCard } from "@/components/property-card"
 import { getProperties } from "@/lib/properties"
 
-export const metadata: Metadata = { title: "Property for sale", description: "Explore selected homes for sale in Marbella." }
+export const metadata: Metadata = {
+  title: "Property for sale in Marbella",
+  description: "Explore selected villas, apartments, penthouses, and private homes for sale in Marbella and the Costa del Sol.",
+}
 
-export default async function Buy({ searchParams }: { searchParams: Promise<Record<string,string|undefined>> }) {
-  const params = await searchParams; const { items, source } = await getProperties(); const beds=Number(params.beds||0); const max=Number(params.max||0)
-  const filtered=items.filter(p=>p.transaction==="sale"&&(!params.area||p.areaSlug===params.area)&&(!beds||p.bedrooms>=beds)&&(!max||p.price<=max))
-  return <><header className="page-hero"><p className="eyebrow">Portfolio</p><h1>Homes for sale</h1><p>A concise selection of residences chosen for location, character, and enduring quality.</p></header><div className="listing-layout"><form className="filters"><select name="area" defaultValue={params.area||""} aria-label="Area"><option value="">All areas</option><option value="golden-mile">Golden Mile</option><option value="nueva-andalucia">Nueva Andalucía</option><option value="benahavis">Benahavís</option></select><select name="beds" defaultValue={params.beds||""} aria-label="Minimum bedrooms"><option value="">Any bedrooms</option><option>2</option><option>3</option><option>4</option><option>5</option></select><select name="max" defaultValue={params.max||""} aria-label="Maximum price"><option value="">Any price</option><option value="1000000">Up to €1M</option><option value="2000000">Up to €2M</option><option value="4000000">Up to €4M</option></select><button className="button">Apply</button></form><p>{filtered.length} homes · {source} feed</p><div className="property-grid">{filtered.map((p,index)=><PropertyCard key={p.id} property={p} priority={index===0}/>)}</div></div></>
+type SearchParams = Promise<Record<string, string | string[] | undefined>>
+
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] || "" : value || ""
+}
+
+export default async function Buy({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams
+  const { items, source } = await getProperties()
+  const beds = Number(first(params.beds) || 0)
+  const max = Number(first(params.max) || 0)
+  const area = first(params.area)
+  const type = first(params.type).toLowerCase()
+  const results = items.filter((property) => property.transaction === "sale")
+    .filter((property) => !area || property.areaSlug === area)
+    .filter((property) => !beds || property.bedrooms >= beds)
+    .filter((property) => !max || property.price <= max)
+    .filter((property) => !type || property.propertyType.toLowerCase() === type)
+
+  return (
+    <>
+      <header className="page-hero catalogue-hero">
+        <div><p className="eyebrow">The sales collection</p><h1>Homes to buy<br /><em>in Marbella.</em></h1></div>
+        <p>Selected for architecture, location, and the quality of life they make possible.</p>
+      </header>
+      <div className="catalogue-shell">
+        <CatalogueFilters params={params} transaction="sale" />
+        <div className="catalogue-toolbar">
+          <p><SlidersHorizontal aria-hidden="true" /> <strong>{results.length}</strong> {results.length === 1 ? "residence" : "residences"}</p>
+          <span><i className="source-dot" /> {source === "captemos" ? "Live CapteMos portfolio" : "Demonstration portfolio"}</span>
+        </div>
+        {results.length ? <div className="property-grid catalogue-grid">{results.map((property, index) => <PropertyCard key={property.id} property={property} priority={index < 2} />)}</div> : (
+          <div className="empty-state"><p className="eyebrow">A more personal search</p><h2>No exact matches yet.</h2><p>Widen the filters or share your brief. Some of the most relevant homes are introduced privately.</p><div><Link className="button" href="/matchmaker">Create a private brief <ArrowRight aria-hidden="true" /></Link><Link className="text-link" href="/buy">Clear filters</Link></div></div>
+        )}
+      </div>
+    </>
+  )
 }
